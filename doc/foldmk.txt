@@ -1,0 +1,197 @@
+*foldmk.txt* A simple foldtext customizer                             *foldmk*
+                       __      _     _           _    ~
+                      / _|    | |   | |         | |   ~
+                     | |_ ___ | | __| |_ __ ___ | | __~
+                     |  _/ _ \| |/ _` | '_ ` _ \| |/ /~
+                     | || (_) | | (_| | | | | | |   < ~
+                     |_| \___/|_|\__,_|_| |_| |_|_|\_\~
+
+==============================================================================
+
+CONTENTS                                                     *foldmk-contents*
+
+    1. Introduction .................. |foldmk-intro|
+    2. Usage ......................... |foldmk-usage|
+    3. Configuration ................. |foldmk-config|
+        3.1. Indent .................. |foldmk-indent|
+        3.2. Layout .................. |foldmk-layout|
+            3.2.1. Layout Examples ... |foldmk-layout-examples|
+    4. Issues ........................ |foldmk-issues|
+    5. Sandbox ....................... |foldmk-sandbox|
+
+==============================================================================
+
+INTRODUCTION                                                    *foldmk-intro*
+
+This plugins simply adds an easy interface to change vim's foldtext. Rather
+than having to write a completely custom function, this plugin gives a handful
+of useful options to simplify your customization.
+
+==============================================================================
+
+USAGE                                                           *foldmk-usage*
+
+To begin using the customizable foldtext, add the following line to your
+.vimrc:
+>
+    set foldtext=FoldmkFoldText()
+<
+Now closed folds will look more like this by default:
+
+    [+] Folded content ----------------- (10 lines)~
+
+c.f. default vim style:
+
+    +-- 10 lines: Folded content ------------------~
+
+==============================================================================
+
+CONFIGURATION                                                  *foldmk-config*
+
+These are the default configuration options of foldmk:
+>
+    let g:foldmk.indent=4
+    let g:foldmk.indenttext=" "
+    let g:foldmk.layout="[+] t f (l)"
+<
+Any customization you wish to make to the foldtext is done by overriding these
+variables in your .vimrc, e.g.
+>
+    let g:foldmk.indent=0
+<
+------------------------------------------------------------------------------
+
+INDENT                                                         *foldmk-indent*
+
+Nested folds are indented based on their foldlevel, and the configuration
+variables g:foldmk.indent and g:foldmk.indenttext. The way this works is by
+repeating the text set in g:foldmk.indenttext as many times as set by
+g:foldmk.indent per fold level. An example with the default settings
+illustrates this:
+
+    [+] Folded top-level fold ----------------- (1 line)~
+    Open top-level fold~
+        [+] Folded subfold ------------------- (2 lines)~
+        [+] Folded subfold ------------------- (3 lines)~
+    Open subfold~
+            [+] Folded subsubfold ------------ (4 lines)~
+            [+] Folded subsubfold ------------ (5 lines)~
+            [+] Folded subsubfold ------------ (6 lines)~
+        [+] Folded subfold ------------------- (7 lines)~
+    [+] Folded top-level fold ---------------- (8 lines)~
+
+The default indent text is a single space, and the default indent is 4, so
+each fold level is indented 4 spaces more than its parent fold level. If
+indenting is unwanted, it is disabled simply by setting
+>
+    let g:foldmk.indent=0
+<
+There is no restriction on the indent text to be a single character. Any text
+assigned to this variable is repeated the desired number of times.
+
+------------------------------------------------------------------------------
+
+LAYOUT                                                         *foldmk-layout*
+
+The layout of the fold text is controlled by the g:foldmk.layout string. The
+characters t, f, and l determine where the folded text, filler, and line count
+go, respectively. Any other characters in the string are simply printed as-is.
+The 'f' option is useful for right-aligning.
+
+The default layout string is
+
+    "[+] t f (l)"~
+
+which adds a prefix of [+], a separating space, the first line of the folded
+text, another separating space, filling characters, another separating space,
+and finally the line count in parentheses. What character is used to fill the
+space when 'f' is set is determined by vim's 'fillchars' option, just like the
+built-in fold text. If there is no setting in 'fillchars' for fold, a space is
+used, same if 'f' is omitted from the layout string.
+
+The only restriction on this string is that only the first occurrence of 'f'
+is taken into consideration. 't' and 'l' may be repeated.
+
+LAYOUT EXAMPLES                                       *foldmk-layout-examples*
+
+Below are a few examples for layouts. These are by no means exhaustive or
+necessarily good, and should simply serve as inspiration and demonstration.
+
+Default: "[+] t f (l)"
+
+    [+] Folded text -------------------- (10 lines)~
+
+Simple: "t: l"
+
+    Folded text: 10 lines~
+
+Right-aligned text: "f t"
+
+    ----------------------------------- Folded text~
+
+Only line count with some decoration: "... l ..."
+
+    ... 10 lines ...~
+
+==============================================================================
+
+ISSUES                                                         *foldmk-issues*
+
+Currently, the only issue I can see is if any custom text is entered into the
+layout string, it cannot contain the letters t, f, or l, as they represent
+other text. So if you want every fold text to say something like "10 lines
+folded" by setting the layout string to "l folded", it will not work, and will
+instead result in:
+
+    10 lines --------------------------o10 linesded~
+
+I might in the future fix this by adding C-like format strings, like %t, %f,
+%l.
+
+==============================================================================
+
+SANDBOX                                                       *foldmk-sandbox*
+
+Here are some folds for you to try out!
+
+Fold 1 {{{1
+Subfold 1.1 {{{2
+Subsubfold 1.1.1 {{{3
+Subsubfold 1.1.2 {{{3
+Subsubfold 1.1.3 {{{3
+Subfold 1.2 {{{2
+Subsubfold 1.2.1 {{{3
+Subsubfold 1.2.2 {{{3
+Subsubfold 1.2.3 {{{3
+Subfold 1.3 {{{2
+Subsubfold 1.3.1 {{{3
+Subsubfold 1.3.2 {{{3
+Subsubfold 1.3.3 {{{3
+Fold 2 {{{1
+Subfold 2.1 {{{2
+Subsubfold 2.1.1 {{{3
+Subsubfold 2.1.2 {{{3
+Subsubfold 2.1.3 {{{3
+Subfold 2.2 {{{2
+Subsubfold 2.2.1 {{{3
+Subsubfold 2.2.2 {{{3
+Subsubfold 2.2.3 {{{3
+Subfold 2.3 {{{2
+Subsubfold 2.3.1 {{{3
+Subsubfold 2.3.2 {{{3
+Subsubfold 2.3.3 {{{3
+Fold 3 {{{1
+Subfold 3.1 {{{2
+Subsubfold 3.1.1 {{{3
+Subsubfold 3.1.2 {{{3
+Subsubfold 3.1.3 {{{3
+Subfold 3.2 {{{2
+Subsubfold 3.2.1 {{{3
+Subsubfold 3.2.2 {{{3
+Subsubfold 3.2.3 {{{3
+Subfold 3.3 {{{2
+Subsubfold 3.3.1 {{{3
+Subsubfold 3.3.2 {{{3
+Subsubfold 3.3.3 {{{3
+
+vim:tw=78:ft=help:fdm=marker:fdl=0:fml=0
