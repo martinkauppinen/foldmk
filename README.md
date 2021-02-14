@@ -19,9 +19,9 @@ vim default foldtext                    | foldmk default foldtext
 
 Want to change the look? The configuration is handled by 3 variables:
 
-    - `g:foldmk.indent` sets the indentation of nested folds (default: 4)
-    - `g:foldmk.indenttext` sets what text to use for indentation (default: " ")
-    - `g:foldmk.layout` sets the order of the foldtext elements (default: "[+] t f (l)")
+- `g:foldmk.indent` sets the indentation of nested folds (default: 4)
+- `g:foldmk.indenttext` sets what text to use for indentation (default: " ")
+- `g:foldmk.layout` sets the order of the foldtext elements (default: "[+] t f (l)")
 
 `g:foldmk.layout` treats the letters `t`, `f`, and `l` specially. `t` will
 insert the text of the first line of the fold. `l` will insert the text `x
