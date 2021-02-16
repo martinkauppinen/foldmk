@@ -59,17 +59,15 @@ endfunction
 
 " Glue together the parts for the final fold text
 function! s:RenderFoldText(indent, text, linecount)
-    let nonconf = substitute(s:Option("layout"), "[ptfl]", "", "g")
+    let nonconf = substitute(s:Option("layout"), "%[%tfl]", "", "g")
     let fillcount = s:UsableColumns(0)
                 \- strlen(nonconf)
                 \- strlen(a:indent)
 
-    " Support multiple prefix, fold text, and linecounts
-    let prefixcount = count(s:Option("layout"), "p")
+    " Support multiple fold text, and linecounts
     let textcount = count(s:Option("layout"), "t")
     let linecountcount = count(s:Option("layout"), "l")
 
-    let fillcount -= prefixcount * strlen(s:Option("prefix"))
     let fillcount -= textcount * strlen(a:text)
     let fillcount -= linecountcount * strlen(a:linecount)
 
@@ -78,9 +76,7 @@ function! s:RenderFoldText(indent, text, linecount)
     let addedfill = 0
 
     for char in split(s:Option("layout"), '\zs')
-        if char ==# 'p'
-            let finaltext ..= s:Option("prefix")
-        elseif char ==# 't'
+        if char ==# 't'
             let finaltext ..= a:text
         elseif char ==# 'f'
             " Only add fill once
