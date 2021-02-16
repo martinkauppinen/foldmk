@@ -52,7 +52,7 @@ These are the default configuration options of foldmk:
 >
     let g:foldmk.indent=4
     let g:foldmk.indenttext=" "
-    let g:foldmk.layout="[+] t f (l)"
+    let g:foldmk.layout="[+] %t %f (%l)"
 <
 Any customization you wish to make to the foldtext is done by overriding these
 variables in your .vimrc, e.g.
@@ -94,42 +94,43 @@ assigned to this variable is repeated the desired number of times.
 LAYOUT                                                         *foldmk-layout*
 
 The layout of the fold text is controlled by the g:foldmk.layout string. The
-characters t, f, and l determine where the folded text, filler, and line count
-go, respectively. Any other characters in the string are simply printed as-is.
-The 'f' option is useful for right-aligning.
+format strings '%t', '%f', and '%l' determine where the folded text, filler,
+and line count go, respectively. Any other characters in the string are simply
+printed as-is.  The '%f' option is useful for aligning.
 
 The default layout string is
 
-    "[+] t f (l)"~
+    "[+] %t %f (%l)"~
 
 which adds a prefix of [+], a separating space, the first line of the folded
 text, another separating space, filling characters, another separating space,
 and finally the line count in parentheses. What character is used to fill the
-space when 'f' is set is determined by vim's 'fillchars' option, just like the
-built-in fold text. If there is no setting in 'fillchars' for fold, a space is
-used, same if 'f' is omitted from the layout string.
-
-The only restriction on this string is that only the first occurrence of 'f'
-is taken into consideration. 't' and 'l' may be repeated.
+space when '%f' is set is determined by vim's 'fillchars' option, just like
+the built-in fold text. If there is no setting in 'fillchars' for fold, a
+space is used.
 
 LAYOUT EXAMPLES                                       *foldmk-layout-examples*
 
 Below are a few examples for layouts. These are by no means exhaustive or
 necessarily good, and should simply serve as inspiration and demonstration.
 
-Default: "[+] t f (l)"
+Default: "[+] %t %f (%l)"
 
     [+] Folded text -------------------- (10 lines)~
 
-Simple: "t: l"
+Center-aligned text: "%f %t %f", g:foldmk.indent=0
+
+    ----------------- Folded text ----------------- ~
+
+Simple: "%t: %l"
 
     Folded text: 10 lines~
 
-Right-aligned text: "f t"
+Right-aligned text: "%f %t"
 
     ----------------------------------- Folded text~
 
-Only line count with some decoration: "... l ..."
+Only line count with some decoration: "... %l ..."
 
     ... 10 lines ...~
 
@@ -137,16 +138,7 @@ Only line count with some decoration: "... l ..."
 
 ISSUES                                                         *foldmk-issues*
 
-Currently, the only issue I can see is if any custom text is entered into the
-layout string, it cannot contain the letters t, f, or l, as they represent
-other text. So if you want every fold text to say something like "10 lines
-folded" by setting the layout string to "l folded", it will not work, and will
-instead result in:
 
-    10 lines --------------------------o10 linesded~
-
-I might in the future fix this by adding C-like format strings, like %t, %f,
-%l.
 
 ==============================================================================
 

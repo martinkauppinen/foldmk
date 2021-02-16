@@ -11,7 +11,7 @@ let b:loaded_foldmk = 1
 let s:foldmkdefault = {
             \"indent": 4,
             \"indenttext": " ",
-            \"layout": "[+] t f (l)",
+            \"layout": "[+] %t %f (%l)",
             \}
 
 " Functions {{{2
@@ -57,43 +57,82 @@ function! s:GetFoldChar()
     return ret
 endfunction
 
+" Replace first occurrence of any token in tokens
+function! s:ReplaceFirst(string, tokens, substitutions, start)
+    let idx = s:FindFirstIndex(a:string, a:tokens, a:start)
+    let newtext = a:string[a:start :]
+    let substitution = a:substitutions[idx]
+    let token = a:tokens[idx]
+    let nextsearchstart = match(a:string, token, a:start)
+    let newtext = substitute(newtext, token, substitution, '')
+    if a:start > 0
+        let newtext = a:string[: a:start - 1] .. newtext
+    endif
+    echom a:string . ": " . a:start
+
+    let ret = [newtext, nextsearchstart]
+
+    " %% is a special case, only increment 1
+    if token == "%%"
+        let ret[1] += 1
+    else
+        let ret[1] += strlen(substitution)
+    endif
+    return ret
+
+endfunction
+
+" Find first occurrence of any string in needles in haystack
+function! s:FindFirstIndex(haystack, needles, start)
+    let idxs = []
+    for needle in a:needles
+        let idxs += [stridx(a:haystack, needle, a:start)]
+    endfor
+    call map(idxs, { idx, val -> val < 0 ? strlen(a:haystack) : val })
+    let idx = index(idxs, min(idxs))
+    return idxs[idx] == strlen(a:haystack) ? -1 : idx
+endfunction
+
 " Glue together the parts for the final fold text
 function! s:RenderFoldText(indent, text, linecount)
     let nonconf = substitute(s:Option("layout"), "%[%tfl]", "", "g")
-    let fillcount = s:UsableColumns(0)
+    let fill = s:UsableColumns(0)
                 \- strlen(nonconf)
                 \- strlen(a:indent)
 
-    " Support multiple fold text, and linecounts
-    let textcount = count(s:Option("layout"), "t")
-    let linecountcount = count(s:Option("layout"), "l")
+    " Support multiple fills, fold text, and linecounts
+    let textcount = count(s:Option("layout"), "%t")
+    let linecountcount = count(s:Option("layout"), "%l")
+    let fillcount = count(s:Option("layout"), "%f")
+    let percentcount = count(s:Option("layout"), "%%")
 
-    let fillcount -= textcount * strlen(a:text)
-    let fillcount -= linecountcount * strlen(a:linecount)
+    let fill -= textcount * strlen(a:text)
+    let fill -= linecountcount * strlen(a:linecount)
+    let fill -= percentcount
+    let fill /= fillcount
 
     let finaltext = a:indent
-    let fill = repeat(s:GetFoldChar(), fillcount)
+    let filler = repeat(s:GetFoldChar(), fill)
     let addedfill = 0
 
-    for char in split(s:Option("layout"), '\zs')
-        if char ==# 't'
-            let finaltext ..= a:text
-        elseif char ==# 'f'
-            " Only add fill once
-            if addedfill == 0
-                let finaltext ..= fill
-                let addedfill = 1
-            endif
-        elseif char ==# 'l'
-            let finaltext ..= a:linecount
-        else
-            let finaltext ..= char
-        endif
-    endfor
+    let textbuild = s:Option("layout")
+    let start = 0
+    let prevlen = -1
+    while strlen(textbuild) != prevlen
+        let prevlen = strlen(textbuild)
+        let [textbuild, l:start] = s:ReplaceFirst(
+                    \textbuild,
+                    \["%%", "%f", "%t", "%l"],
+                    \["%", l:filler, a:text, a:linecount],
+                    \l:start)
+    endwhile
 
-    " Add dummy empty fill at the end if 'f' absent from layout
-    if addedfill == 0
-        let finaltext ..= repeat(" ", winwidth(0))
+    let finaltext ..= textbuild
+
+    " Hack for when things don't divide out nicely with multiple %f's
+    if strlen(finaltext) < s:UsableColumns(0)
+        let padding = repeat(s:GetFoldChar(), 1 + s:UsableColumns(0) - strlen(finaltext))
+        let finaltext = substitute(finaltext, s:GetFoldChar(), padding, "")
     endif
 
     return finaltext
