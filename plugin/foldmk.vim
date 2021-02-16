@@ -68,7 +68,6 @@ function! s:ReplaceFirst(string, tokens, substitutions, start)
     if a:start > 0
         let newtext = a:string[: a:start - 1] .. newtext
     endif
-    echom a:string . ": " . a:start
 
     let ret = [newtext, nextsearchstart]
 

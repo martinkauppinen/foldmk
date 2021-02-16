@@ -96,7 +96,9 @@ LAYOUT                                                         *foldmk-layout*
 The layout of the fold text is controlled by the g:foldmk.layout string. The
 format strings '%t', '%f', and '%l' determine where the folded text, filler,
 and line count go, respectively. Any other characters in the string are simply
-printed as-is.  The '%f' option is useful for aligning.
+printed as-is.  The '%f' option is useful for aligning. To get a literal
+percent sign before a format string, two percent signs are needed; "%%%l" will
+result in "%10 lines", for example.
 
 The default layout string is
 
