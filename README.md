@@ -21,7 +21,7 @@ Want to change the look? The configuration is handled by 3 variables:
 
 - `g:foldmk.indent` sets the indentation of nested folds (default: 4)
 - `g:foldmk.indenttext` sets what text to use for indentation (default: " ")
-- `g:foldmk.layout` sets the order of the foldtext elements (default: "[+] t f (l)")
+- `g:foldmk.layout` sets the order of the foldtext elements (default: "[+] %t %f (%l)")
 
 `g:foldmk.layout` treats the strings `%t`, `%f`, `%l`, and `%%` specially. `%t`
 will insert the text of the first line of the fold. `%l` will insert the text `x
@@ -39,8 +39,8 @@ experiment).
 
 Layout string | Result
 ------------- | ------
-`"[+] t f (l)"` | <pre>`[+] Folded text -------------------- (10 lines)`</pre>
-`"t: l"`        | <pre>`Folded text: 10 lines                          `</pre>
-`"f t"`         | <pre>`----------------------------------- Folded text`</pre>
-`"... l ..."`   | <pre>`... 10 lines ...                               `</pre>
+`"[+] %t %f (%l)"` | <pre>`[+] Folded text -------------------- (10 lines)`</pre>
+`"%t: %l"`        | <pre>`Folded text: 10 lines                          `</pre>
+`"%f %t"`         | <pre>`----------------------------------- Folded text`</pre>
+`"... %l ..."`   | <pre>`... 10 lines ...                               `</pre>
 `"%f %t %f"`    | <pre>`----------------- Folded text -----------------`</pre>
